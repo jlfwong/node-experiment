@@ -1,0 +1,17 @@
+{
+  "name": "modulr_build",
+  "version": "0.0.0",
+  "directories": {
+    "lib": "lib"
+  },
+  "bin": {
+    "modulr_build" : "./modulr_build.js"
+  },
+  "dependencies": {
+    "modulr": "0.6.1",
+    "module-grapher": "0.7.x",
+    "optimist": "0.2.8",
+    "colors": ">=0.5.0"
+  }
+}
+
