@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+var argv = require('optimist').argv;
+var readJsonFile = require('../lib/util').readJsonFile;
+
+var buildJobs = readJsonFile('experiment.json');
+
+if (!buildJobs) {
+  process.exit(1);
+}
+
+buildJobs.forEach(function(job) {
+  require('../lib/job').handle(job);
+});
+
+// vim: ft=javascript
