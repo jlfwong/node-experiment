@@ -1,41 +1,29 @@
 fs              = require("fs")
 jade            = require("jade")
 path            = require("path")
-{tsLog}         = require("../util")
-{waitForChange} = require("../watch")
+
+{watchCompile}  = require("../watch_compile")
+{forEachSource} = require("../job")
 
 build = exports.build = (job, cb) ->
+  basename = path.basename(job.source, ".jade")
+
+  job.targetFile ?= path.resolve(job.targetDir, basename + ".html")
+
   try
     contents = fs.readFileSync(job.source, "utf8")
-  catch e
-    tsLog {
-      type: "jade"
-      color: "red"
-      msg: "Failed to read #{path.resolve(job.source)}"
-    }
-
+  catch err
+    cb err, {watchPaths: [job.source]}
     return
 
   html = jade.compile(contents)()
   fs.writeFileSync job.targetFile, html
 
-continuousBuild = exports.continuousBuild = (job) ->
-  basename = path.basename(job.source, ".jade")
-  job.targetFile = path.resolve(job.targetDir, basename + ".html")
-  build job
-
-  tsLog {
-    type: "jade"
-    color: "green"
-    msg: "Finished building #{path.resolve(job.targetFile)}"
-  }
-
-  waitForChange [ job.source ], ->
-    continuousBuild job
+  cb null, {watchPaths: [job.source]}
 
 exports.startJob = (job) ->
-  job.sources.map (source) ->
-    continuousBuild {
-      source: source
-      targetDir: job.targetDir
+  forEachSource job, (sourceJob) ->
+    watchCompile {
+      job   : sourceJob
+      using : build
     }

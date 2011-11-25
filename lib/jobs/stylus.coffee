@@ -1,51 +1,29 @@
 fs              = require("fs")
 path            = require("path")
 stylus          = require("stylus")
-tsLog           = require("../util").tsLog
-{waitForChange} = require("../watch")
+
+{watchCompile}  = require("../watch_compile")
+{forEachSource} = require("../job")
 
 build = exports.build = (job, cb) ->
+  basename = path.basename(job.source, ".styl")
+  job.targetFile ?= path.resolve(job.targetDir, basename + ".css")
+
   try
     contents = fs.readFileSync(job.source, "utf8")
-  catch e
-    tsLog {
-      type: "stylus"
-      color: "red"
-      msg: "Failed to read #{path.resolve(job.source)}"
-    }
-
+  catch err
+    cb err, {watchPaths: [job.source]}
     return
 
   stylus(contents).render (err, css) ->
-    if err
-      tsLog {
-        type: "stylus"
-        color: "red"
-        msg: "Failed to compile #{path.resolve(job.source)}"
-      }
-
-      console.error err.stack
-    else
+    if not err
       fs.writeFileSync job.targetFile, css
 
-    cb()
-
-continuousBuild = exports.continuousBuild = (job) ->
-  basename = path.basename(job.source, ".styl")
-  job.targetFile = path.resolve(job.targetDir, basename + ".css")
-  build job, ->
-    tsLog {
-      type: "stylus"
-      color: "green"
-      msg: "Finished building #{path.resolve(job.targetFile)}"
-    }
-
-    waitForChange [ job.source ], ->
-      continuousBuild job
+    cb err, {watchPaths: [job.source]}
 
 exports.startJob = (job) ->
-  job.sources.map (source) ->
-    continuousBuild {
-      source: source
-      targetDir: job.targetDir
+  forEachSource job, (sourceJob) ->
+    watchCompile {
+      job   : sourceJob
+      using : build
     }

@@ -5,8 +5,10 @@ argv = require('optimist')
   )
   .usage('Usage: $0 [run|new|help]')
   .argv
+path = require('path')
 
-readJsonFile = require('../lib/util').readJsonFile
+{readJsonFile} = require('../lib/util')
+{loadJobs, handleJob} = require('../lib/job')
 
 if argv._[0] == 'run'
   buildJobs = readJsonFile('jobs.json')
@@ -17,10 +19,12 @@ if argv._[0] == 'run'
   jobs = buildJobs.jobs
   defaults = buildJobs.defaults
 
+  loadJobs path.join(__dirname, "..", "lib", "jobs")
+
   jobs.forEach (job) ->
     for prop of defaults
       if not job[prop]?
         job[prop] = defaults[prop];
 
   jobs.forEach (job) ->
-    require('../lib/job').handle(job)
+    handleJob job
