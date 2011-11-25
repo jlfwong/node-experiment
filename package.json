@@ -5,7 +5,7 @@
     "lib": "lib"
   },
   "bin": {
-    "experiment" : "bin/experiment"
+    "experiment" : "bin/experiment.js"
   },
   "dependencies": {
     "modulr": ">=0.6.1",
