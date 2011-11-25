@@ -16,7 +16,18 @@ build = exports.build = (job, cb) ->
     return
 
   stylus(contents).render (err, css) ->
-    if not err
+    if err
+      fs.writeFileSync job.targetFile, """
+        body {
+          color: red;
+          font-size: 30pt;
+        }
+
+        body:before {
+          content: "Failed to build #{job.targetFile}"
+        }
+      """
+    else
       fs.writeFileSync job.targetFile, css
 
     cb err, {watchPaths: [job.source]}
