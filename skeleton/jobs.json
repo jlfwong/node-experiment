@@ -1,0 +1,42 @@
+{
+  "defaults" : {
+    "targetDir" : "out"
+  },
+
+  "jobs" : [
+    {
+      "type"    : "modulr",
+      "sources" : [
+        "src/lib",
+        "src/test"
+      ]
+    },
+
+    {
+      "type"    : "stylus",
+      "sources" : [
+        "src/style/main.styl"
+      ]
+    },
+
+    {
+      "type"    : "jade",
+      "sources" : [
+        "src/index.jade",
+        "src/test.jade"
+      ]
+    },
+
+    {
+      "type"    : "copy",
+      "sources" : [
+        "src/vendor"
+      ]
+    },
+
+    {
+      "type"   : "server",
+      "port"   : "1234"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "client-tests",
+  "version": "0.0.0",
+  "main": "tests",
+  "modulr": {
+    "paths": [
+      "../lib"
+    ]
+  }
+}

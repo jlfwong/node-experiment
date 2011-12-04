@@ -25,7 +25,7 @@ copy = exports.copy = (src, dst, cb) ->
         msg: stderr
       }
 
-    cb()
+    cb?()
 
 continuousCopy = exports.continuousCopy = (src, dst) ->
   copy src, dst, ->

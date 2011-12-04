@@ -12,14 +12,12 @@ build = exports.build = (job, cb) ->
 
   try
     contents = fs.readFileSync(job.source, "utf8")
+    html = jade.compile(contents)()
+    fs.writeFileSync job.targetFile, html
+    cb null, {watchPaths: [job.source]}
   catch err
     cb err, {watchPaths: [job.source]}
     return
-
-  html = jade.compile(contents)()
-  fs.writeFileSync job.targetFile, html
-
-  cb null, {watchPaths: [job.source]}
 
 exports.startJob = (job) ->
   forEachSource job, (sourceJob) ->

@@ -1,0 +1,18 @@
+!!! 5
+html(lang="en")
+  meta(charset="utf-8")
+  head
+    title Tests
+    link(rel="stylesheet", type="text/css", href="vendor/mocha.css")
+
+  body
+    #mocha
+
+    script(src="vendor/jquery-1.7.1.min.js")
+    script(src="vendor/underscore-1.2.2.min.js")
+    script(src="vendor/mocha.js")
+    script(type="text/javascript")
+      mocha.setup('bdd')
+    script(src="client-tests.js")
+    script(type="text/javascript')
+      window.onload = mocha.run

@@ -1,4 +1,8 @@
-argv = require('optimist')
+optimist = require 'optimist'
+
+{newExperiment} = require '../lib/generator'
+
+argv = optimist
   .check( (argv) ->
     if argv._.length == 0
       throw ""
@@ -10,21 +14,32 @@ path = require('path')
 {readJsonFile} = require('../lib/util')
 {loadJobs, handleJob} = require('../lib/job')
 
-if argv._[0] == 'run'
-  buildJobs = readJsonFile('jobs.json')
+switch argv._[0]
+  when 'run'
+    buildJobs = readJsonFile('jobs.json')
 
-  if not buildJobs?
-    process.exit(1)
+    if not buildJobs?
+      process.exit(1)
 
-  jobs = buildJobs.jobs
-  defaults = buildJobs.defaults
+    jobs = buildJobs.jobs
+    defaults = buildJobs.defaults
 
-  loadJobs path.join(__dirname, "..", "lib", "jobs")
+    loadJobs path.join(__dirname, "..", "lib", "jobs")
 
-  jobs.forEach (job) ->
-    for prop of defaults
-      if not job[prop]?
-        job[prop] = defaults[prop];
+    jobs.forEach (job) ->
+      for prop of defaults
+        if not job[prop]?
+          job[prop] = defaults[prop];
 
-  jobs.forEach (job) ->
-    handleJob job
+    jobs.forEach (job) ->
+      handleJob job
+  when 'new'
+    targetDir = argv._[1]
+
+    if targetDir?
+      newExperiment targetDir
+    else
+      optimist.showHelp()
+
+  else
+    optimist.showHelp()
