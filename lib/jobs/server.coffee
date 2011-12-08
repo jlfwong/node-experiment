@@ -3,6 +3,9 @@ path       = require("path")
 {tsLog}    = require("../util")
 
 exports.startJob = (job) ->
+  if job.watch == 'false'
+    return
+
   port = job.port
   targetDir = job.targetDir
 

@@ -27,5 +27,6 @@ watchCompile = exports.watchCompile = ({job, using: build, lastErr}) ->
         msg: "Finished building #{path.resolve(job.targetFile)}"
       }
 
-      waitForChange watchPaths, ->
-        watchCompile {job, using: build, lastErr: errMsg}
+      unless job.watch == 'false'
+        waitForChange watchPaths, ->
+          watchCompile {job, using: build, lastErr: errMsg}

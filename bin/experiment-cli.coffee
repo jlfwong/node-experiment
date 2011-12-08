@@ -26,14 +26,29 @@ switch argv._[0]
 
     loadJobs path.join(__dirname, "..", "lib", "jobs")
 
+    # Let argv overrite defaults, e.g.
+    #
+    #     experiment run --watch=false
+    #
+    # Will add {watch:'false'} to the default params of every job
+    for prop of argv
+      if prop[0] == '$' or prop == '_'
+        continue
+      defaults[prop] = argv[prop]
+
+    # Merge the default properties into each job if they aren't specifically
+    # specified in the job
     jobs.forEach (job) ->
       for prop of defaults
         if not job[prop]?
-          job[prop] = defaults[prop];
+          job[prop] = defaults[prop]
 
+    # Handle each job
     jobs.forEach (job) ->
       handleJob job
+
   when 'new'
+    # Copy the skeleton to the targetDirectory
     targetDir = argv._[1]
 
     if targetDir?

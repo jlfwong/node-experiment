@@ -1,8 +1,8 @@
-child_process   = require("child_process")
-fs              = require("fs")
-path            = require("path")
-{tsLog}         = require("../util")
-{waitForChange} = require("../watch")
+child_process   = require "child_process"
+fs              = require "fs"
+path            = require "path"
+{tsLog, mkdirP} = require "../util"
+{waitForChange} = require "../watch"
 
 listFilesRecursive = (fileOrDirPath) ->
   stat = fs.statSync(fileOrDirPath)
@@ -16,19 +16,20 @@ listFilesRecursive = (fileOrDirPath) ->
 
   return fileList
 
-copy = exports.copy = (src, dst, cb) ->
-  child_process.exec "cp -R '#{src}' '#{dst}'", (error, stdout, stderr) ->
-    if error
-      tsLog {
-        type: "copy"
-        color: "red"
-        msg: stderr
-      }
+copy = exports.copy = ({src, dst}, cb) ->
+  mkdirP dst, ->
+    child_process.exec "cp -R '#{src}' '#{dst}'", (error, stdout, stderr) ->
+      if error
+        tsLog {
+          type: "copy"
+          color: "red"
+          msg: stderr
+        }
 
-    cb?()
+      cb?()
 
-continuousCopy = exports.continuousCopy = (src, dst) ->
-  copy src, dst, ->
+continuousCopy = exports.continuousCopy = ({src, dst, job}) ->
+  copy {src, dst}, ->
     tsLog {
       type: "copy"
       color: "green"
@@ -36,12 +37,18 @@ continuousCopy = exports.continuousCopy = (src, dst) ->
     }
 
     fileList = listFilesRecursive(src)
-    waitForChange fileList, ->
-      continuousCopy job
+
+    unless job.watch == 'false'
+      waitForChange fileList, ->
+        continuousCopy job
 
 exports.startJob = (job) ->
   if job.source
     job.sources = [job.source]
 
   job.sources.forEach (source) ->
-    continuousCopy source, job.targetDir
+    continuousCopy {
+      src   : source
+      dst   : job.targetDir
+      job   : job
+    }

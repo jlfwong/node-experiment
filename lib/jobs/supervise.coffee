@@ -1,14 +1,14 @@
 child_process   = require 'child_process'
-{tsLog}         = require("../util")
-{waitForChange} = require("../watch")
+{tsLog}         = require '../util'
+{waitForChange} = require '../watch'
 
 run = (job) ->
   ps = child_process.spawn job.command, job.args
 
   ps.stdout.on 'data', (data) ->
     tsLog {
-      type  : "cmd"
-      color : "underline"
+      type  : 'superv'
+      color : 'underline'
       msg   : "stdout from #{job.command} #{job.args.join(' ')}"
       nodup : true
     }
@@ -16,8 +16,8 @@ run = (job) ->
 
   ps.stderr.on 'data', (data) ->
     tsLog {
-      type  : "cmd"
-      color : "red"
+      type  : 'superv'
+      color : 'red'
       msg   : "stderr from #{job.command} #{job.args.join(' ')}"
       nodup : true
     }
@@ -26,12 +26,15 @@ run = (job) ->
   return ps
 
 supervise = (job) ->
+  if job.watch == 'false'
+    return
+
   ps = run job
 
   tsLog {
-    type: "cmd"
-    color: "green"
-    msg:  "starting #{job.command} #{job.args.join(' ')}"
+    type  : 'superv'
+    color : 'green'
+    msg   : "starting #{job.command} #{job.args.join(' ')}"
   }
 
   waitForChange job.sources, ->

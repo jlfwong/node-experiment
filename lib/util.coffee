@@ -3,6 +3,17 @@ child_process = require 'child_process'
 modulr        = require 'modulr'
 path          = require 'path'
 
+mkdirP = exports.mkdirP = (filePath, cb) ->
+  cmd = "mkdir -p '#{path.dirname(filePath)}'"
+  child_process.exec cmd, (error, stdout, stderr) ->
+    if error
+      console.error error.stack
+
+    if stderr.length
+      console.error '' + stderr
+
+    cb()
+
 readJsonFile = exports.readJsonFile = (filePath) ->
   if not path.existsSync(filePath)
     console.error "File not found: #{filePath}"

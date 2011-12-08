@@ -1,16 +1,17 @@
-fs              = require("fs")
-path            = require("path")
-stylus          = require("stylus")
+fs              = require 'fs'
+path            = require 'path'
+stylus          = require 'stylus'
 
-{watchCompile}  = require("../watch_compile")
-{forEachSource} = require("../job")
+{watchCompile}  = require '../watch_compile'
+{forEachSource} = require '../job'
+{mkdirP}        = require '../util'
 
 build = exports.build = (job, cb) ->
-  basename = path.basename(job.source, ".styl")
-  job.targetFile ?= path.resolve(job.targetDir, basename + ".css")
+  basename = path.basename(job.source, '.styl')
+  job.targetFile ?= path.resolve(job.targetDir, basename + '.css')
 
   try
-    contents = fs.readFileSync(job.source, "utf8")
+    contents = fs.readFileSync(job.source, 'utf8')
   catch err
     cb err, {watchPaths: [job.source]}
     return
@@ -27,10 +28,11 @@ build = exports.build = (job, cb) ->
           content: "Failed to build #{job.targetFile}"
         }
       """
+      cb err, {watchPaths: [job.source]}
     else
-      fs.writeFileSync job.targetFile, css
-
-    cb err, {watchPaths: [job.source]}
+      mkdirP job.targetFile, ->
+        fs.writeFileSync job.targetFile, css
+        cb err, {watchPaths: [job.source]}
 
 exports.startJob = (job) ->
   forEachSource job, (sourceJob) ->
