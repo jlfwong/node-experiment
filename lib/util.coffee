@@ -23,7 +23,16 @@ readJsonFile = exports.readJsonFile = (filePath) ->
   return contents
 
 require 'colors'
-tsLog = exports.tsLog = ({type, color, msg}) ->
+
+lastTsLogParams = {}
+tsLog = exports.tsLog = ({type, color, msg, nodup}) ->
+  if nodup
+    {type: lastType, msg: lastMsg} = lastTsLogParams
+    if type == lastType and msg == lastMsg
+      return
+
+  lastTsLogParams = {type, color, msg, nodup}
+
   while type.length < 6
     type = ' ' + type
 

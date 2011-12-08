@@ -7,16 +7,19 @@ run = (job) ->
 
   ps.stdout.on 'data', (data) ->
     tsLog {
-      type: "cmd"
-      msg:  "stdout from #{job.command} #{job.args.join(' ')}"
+      type  : "cmd"
+      color : "underline"
+      msg   : "stdout from #{job.command} #{job.args.join(' ')}"
+      nodup : true
     }
     console.log '' + data
 
   ps.stderr.on 'data', (data) ->
     tsLog {
-      type: "cmd"
-      color: "red"
-      msg:  "stderr from #{job.command} #{job.args.join(' ')}"
+      type  : "cmd"
+      color : "red"
+      msg   : "stderr from #{job.command} #{job.args.join(' ')}"
+      nodup : true
     }
     console.log '' + data
 
