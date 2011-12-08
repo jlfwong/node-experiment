@@ -9,13 +9,13 @@ readJsonFile = exports.readJsonFile = (filePath) ->
     return false
 
   try
-    rawContents = fs.readFileSync(filePath, 'utf8')
+    rawContents = fs.readFileSync filePath, 'utf8'
   catch e
     console.error "Failed to read file #{filePath}", e.stack
     return false
 
   try
-    contents = JSON.parse(rawContents);
+    contents = JSON.parse rawContents
   catch e
     console.error "Invalid JSON in #{filePath}", rawContents, e.stack
     return false
