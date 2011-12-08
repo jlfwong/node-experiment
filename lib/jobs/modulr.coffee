@@ -17,10 +17,10 @@ build = exports.build = (job, cb) ->
 
   modulr.buildFromPackage job.source, (err, result) ->
     if err
-      errMsg = err.longDesc or err.message
+      errMsg = (err.longDesc or err.stack or '').replace /'/g, '"'
       fs.writeFileSync job.targetFile, """
         console.error('[modulr] Failed to build #{job.targetFile}');
-        console.error(decodeURIComponent('#{encodeURIComponent(errMsg)}'));
+        console.error('#{JSON.stringify(errMsg)}');
       """
       cb err, {}
 

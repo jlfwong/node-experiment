@@ -40,7 +40,7 @@ continuousCopy = exports.continuousCopy = ({src, dst, job}) ->
 
     unless job.watch == 'false'
       waitForChange fileList, ->
-        continuousCopy job
+        continuousCopy {src, dst, job}
 
 exports.startJob = (job) ->
   if job.source
